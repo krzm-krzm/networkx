@@ -60,7 +60,7 @@ if __name__ =='__main__':
     Setting_Info_base =Setting_Info[0]
 
     #T = Setting_Info_base[5]    #時間数
-    T = 3
+    T = 15
     n= int(Setting_Info[1])+1 #デポを含めた頂点数
     Request = int((n-1)/2)  #リクエスト数
     Distance = Setting_Info[3]  #距離
@@ -69,17 +69,19 @@ if __name__ =='__main__':
 
     N=10
 
-    G = nx.Graph()
+    G = nx.Graph()  #ノード作成
     for i in range(N):
         for j in range(T):
             G.add_node((i,j))
 
-    pos = {n: (n[0], -n[1]) for n in G.nodes()}
+    pos = {n: (n[1], -n[0]) for n in G.nodes()} #ノードの座標に注意：X座標がノード番号、Y座標が時刻t
     print(pos)
     print(G.nodes())
-
-    G.remove_node((0,0))
+    e=5
+    l=9
+    L=list(range(e,l+1,1))
+    for i in L:
+        G.remove_node((4,i))
     nx.draw_networkx_nodes(G, pos, node_size=30, alpha=1, node_color='blue')
 
     plt.show()
-
