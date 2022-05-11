@@ -11,7 +11,7 @@ def distance(x1, x2, y1, y2):
 
 def Setting(FILENAME):
     mat = []
-    with open('/home/kurozumi/デスクトップ/benchmark/' + FILENAME, 'r', encoding='utf-8') as fin:
+    with open('/Users/kurozumi ryouho/Desktop/benchmark/' + FILENAME, 'r', encoding='utf-8') as fin:
         for line in fin.readlines():
             row = []
             toks = line.split(' ')
@@ -37,8 +37,8 @@ def Setting(FILENAME):
     c = np.zeros((len(mat), len(mat)), dtype=float, order='C')
 
     # eがtime_windowの始、lが終
-    e = np.zeros(len(mat), dtype=float, order='C')
-    l = np.zeros(len(mat), dtype=float, order='C')
+    e = np.zeros(len(mat), dtype=int, order='C')
+    l = np.zeros(len(mat), dtype=int, order='C')
 
     # テキストファイルからtime_windowを格納 & 各ノードの距離を計算し格納
     for i in range(len(mat)):
@@ -55,33 +55,88 @@ def Setting(FILENAME):
     return Setting_Info, request_number, depo_zahyo, c, e, l, noriori
 
 if __name__ =='__main__':
-    FILENAME = 'darp_ex.txt'
+    FILENAME = 'darp_ex2.txt'
     Setting_Info =Setting(FILENAME)
     Setting_Info_base =Setting_Info[0]
 
-    #T = Setting_Info_base[5]    #時間数
-    T = 15
+    T = int(Setting_Info_base[5])    #時間数
     n= int(Setting_Info[1])+1 #デポを含めた頂点数
     Request = int((n-1)/2)  #リクエスト数
     Distance = Setting_Info[3]  #距離
     e = Setting_Info[4] #early time
     l=Setting_Info[5]   #delay time
 
-    N=10
+    noriori = Setting_Info[6]
+
 
     G = nx.Graph()  #ノード作成
-    for i in range(N):
-        for j in range(T):
+    for i in range(n):
+        early_time = e[i]+1
+        late_time = l[i]+1
+        if e[i] ==0:
+            early_time =0
+        add_node = range(early_time,late_time)
+        for j in add_node:
             G.add_node((i,j))
+
+    #G.add_edge((0,0),(1,5),weight=Setting_Info[3][0][1])
+
+
+    for a in range(n):
+        early_time = e[a]+1
+        late_time = l[a]+1
+        if e[a]==0:
+            early_time=0
+
+        add_node = range(early_time, late_time)
+        for j in add_node:
+            for i in range(n-1):    #各ノードからdepoに帰るエッジがつくられていない
+                next_early_time = e[i+1]+1
+                next_late_time = l[i+1]+1
+                if e[i+1]==0:
+                    next_early_time=0
+                next_add_node = range(next_early_time,next_late_time)
+                for k in next_add_node:
+                    distance_check = math.ceil(Distance[a][i+1])
+                    if distance_check+j <= k:       #このedgeを追加するコードは無駄な処理を含んでいます。直す必要アリ(5/10)
+                        G.add_edge((a, j), (i+1, k), weight=Distance[a][i+1])
+                        if a==i+1 and j==k:
+                            G.remove_edge((a,j),(i+1,k))
+
+    for i in range(n-1):
+        early_time = e[i+1]+1
+        late_time = l[i+1]+1
+        if e[i+1]==0:
+            early_time=0
+        add_node =range(early_time,late_time)
+        for j in add_node:
+            depo_repeat=range(early_time,l[0]+1)
+            for k in depo_repeat:
+                distance_check = math.ceil(Distance[i+1][0])
+                if j+distance_check <= k:
+                    G.add_edge((i+1,j),(0,k),weight=Distance[i+1][0])
+
 
     pos = {n: (n[1], -n[0]) for n in G.nodes()} #ノードの座標に注意：X座標がノード番号、Y座標が時刻t
     print(pos)
     print(G.nodes())
+    """
     e=5
     l=9
+
     L=list(range(e,l+1,1))
     for i in L:
         G.remove_node((4,i))
-    nx.draw_networkx_nodes(G, pos, node_size=30, alpha=1, node_color='blue')
+    """
+    nx.draw_networkx_nodes(G, pos, node_size=10, alpha=1, node_color='blue')
+    nx.draw_networkx_edges(G,pos,width=1)
 
     plt.show()
+
+    print(G.edges(data=True))
+
+
+
+
+
+
