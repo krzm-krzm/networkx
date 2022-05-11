@@ -55,7 +55,7 @@ def Setting(FILENAME):
     return Setting_Info, request_number, depo_zahyo, c, e, l, noriori
 
 if __name__ =='__main__':
-    FILENAME = 'darp01.txt'
+    FILENAME = 'darp_ex.txt'
     Setting_Info =Setting(FILENAME)
     Setting_Info_base =Setting_Info[0]
 
