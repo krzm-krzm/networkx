@@ -103,18 +103,19 @@ if __name__ =='__main__':
                         if a==i+1 and j==k:
                             G.remove_edge((a,j),(i+1,k))
 
-    for i in range(n-1):
+    for i in range(n-1):        #各ノードからdepoに帰るエッジを追加
         early_time = e[i+1]+1
         late_time = l[i+1]+1
         if e[i+1]==0:
             early_time=0
         add_node =range(early_time,late_time)
-        for j in add_node:
-            depo_repeat=range(early_time,l[0]+1)
-            for k in depo_repeat:
-                distance_check = math.ceil(Distance[i+1][0])
-                if j+distance_check <= k:
-                    G.add_edge((i+1,j),(0,k),weight=Distance[i+1][0])
+        if noriori[i+1] < 0:
+            for j in add_node:
+                depo_repeat=range(early_time,l[0]+1)
+                for k in depo_repeat:
+                    distance_check = math.ceil(Distance[i+1][0])
+                    if j+distance_check <= k:
+                        G.add_edge((i+1,j),(0,k),weight=Distance[i+1][0])
 
 
     pos = {n: (n[1], -n[0]) for n in G.nodes()} #ノードの座標に注意：X座標がノード番号、Y座標が時刻t
