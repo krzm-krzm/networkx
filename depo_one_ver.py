@@ -58,7 +58,7 @@ def Setting(FILENAME):
 
 
 if __name__ == '__main__':
-    FILENAME = 'darp_ex3.txt'
+    FILENAME = 'darp01_ex.txt'
     Setting_Info = Setting(FILENAME)
     Setting_Info_base = Setting_Info[0]
 
@@ -124,20 +124,18 @@ if __name__ == '__main__':
                             else:
                                 G.add_edge((a, j), (i + 1, k), weight=Distance[a][i + 1])
 
-    """
+
     for i in range(n - 1):
-        early_time = e[i + 1] + 1
-        late_time = l[i + 1] + 1
-        if e[i + 1] == 0:
-            early_time = 0
-        add_node = range(early_time, late_time)
-        for j in add_node:
-            depo_repeat = range(early_time, l[0] + 1)
-            for k in depo_repeat:
-                distance_check = math.ceil(Distance[i + 1][0])
-                if j + distance_check <= k:
-                    G.add_edge((i + 1, j), (0, k), weight=Distance[i + 1][0])
-    """
+        if noriori[i+1] <0:
+            early_time = e[i + 1] + 1
+            late_time = l[i + 1] + 1
+            if e[i + 1] == 0:
+                early_time = 0
+            add_node = range(early_time, late_time)
+            for j in add_node:
+                if j + distance_check <= T+1:
+                    G.add_edge((i + 1, j), (n, T+1), weight=Distance[i + 1][0])
+
     pos = {n: (n[1], -n[0]) for n in G.nodes()}  # ノードの座標に注意：X座標がノード番号、Y座標が時刻t
     # print(pos)
     # print(G.nodes())
@@ -150,13 +148,14 @@ if __name__ == '__main__':
         G.remove_node((4,i))
     nx.draw_networkx_nodes(G, pos, node_size=10, alpha=1, node_color='blue')
     nx.draw_networkx_edges(G, pos, width=1)
-
-    plt.show()
-    """
-    nx.draw_networkx_nodes(G, pos, node_size=10, alpha=1, node_color='blue')
+nx.draw_networkx_nodes(G, pos, node_size=10, alpha=1, node_color='blue')
     nx.draw_networkx_edges(G, pos, width=1)
     plt.show()
-    print(G.edges())
-    #print(nx.number_of_edges(G))
+    plt.show()
+    """
+
+    #print(G.edges())
+    print(nx.number_of_edges(G))
+    print(nx.number_of_nodes(G))
 
 
