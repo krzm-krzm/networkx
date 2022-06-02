@@ -5,9 +5,11 @@ import math
 from itertools import product
 import matplotlib.pyplot as plt
 
+
 def distance(x1, x2, y1, y2):
     d = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
     return d
+
 
 def Setting(FILENAME):
     mat = []
@@ -73,10 +75,12 @@ if __name__ == '__main__':
     for i in range(n):
         early_time = e[i]
         late_time = l[i]
-
         add_node = range(early_time, late_time)
-        for j in add_node:
-            G.add_node((i, j))
+        if i == 0:
+            G.add_node((e[i], 0))
+        else:
+            for j in add_node:
+                G.add_node((i, j))
 
     # G.add_edge((0,0),(1,5),weight=Setting_Info[3][0][1])
 
@@ -121,9 +125,6 @@ if __name__ == '__main__':
                         if b == 1:
                             break
 
-    """
-
-    """
     for i in range(n - 1):
         if noriori[i + 1] < 0:
             early_time = e[i + 1]
@@ -140,15 +141,11 @@ if __name__ == '__main__':
                         G.add_edge((i + 1, j), (0, k), weight=Distance[i + 1][0])
                     if b == 1:
                         break
-    """                   
-    loop = 0
-    for i in range(T):
-        G.add_edge((0, loop), (0, i + 1), weight=0)
-        loop += 1
-    """
+
     pos = {n: (n[1], -n[0]) for n in G.nodes()}  # ノードの座標に注意：X座標がノード番号、Y座標が時刻t
     # print(pos)
     # print(G.nodes())
+
     """
     e=5
     l=9
@@ -157,20 +154,11 @@ if __name__ == '__main__':
         G.remove_node((4,i))
     nx.draw_networkx_nodes(G, pos, node_size=10, alpha=1, node_color='blue')
     nx.draw_networkx_edges(G, pos, width=1)
-
     plt.show()
-
     """
     nx.draw_networkx_nodes(G, pos, node_size=10, alpha=1, node_color='blue')
     nx.draw_networkx_edges(G, pos, width=1)
     plt.show()
+    # print(G.edges())
     print(nx.number_of_edges(G))
     print(nx.number_of_nodes(G))
-    # print(G.edges())
-
-
-
-
-
-
-
