@@ -107,6 +107,7 @@ if __name__ == '__main__':
                                             G.add_edge((a, j), (i + 1, k), weight=Distance[a][i + 1])
                                     else:
                                         G.add_edge((a, j), (i + 1, k), weight=Distance[a][i + 1])
+
                                 if b == 1:
                                     break
                     elif not a == 0:
