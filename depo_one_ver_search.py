@@ -56,6 +56,109 @@ def Setting(FILENAME):
 
     return Setting_Info, request_number, depo_zahyo, c, e, l, noriori
 
+def setuzoku_node_list(dic): #移動できるノードの一覧辞書を返す関数、時間軸に関しては情報落ち
+    node_dict = {}
+    for id,info in dic.items():
+        print(id,info.values())
+        node_dict.setdefault(id[0],info.values())
+
+    return  node_dict
+
+"""
+関数setuzoku_nodeについて
+二個目のノードから再び(0,0)のノードが選ばれてしまうので何かしら分岐が必要
+・ピックアップノードからデポに戻るの禁止
+    ＊デポ以外の近いところを選択、どうしてもない場合、ドロップノードに行く
+    
+・6/20
+    ＊ピックアップノードから関係ないドロップノードにいってしまう
+    *
+"""
+def setuzoku_node_list2(dic,now_location,previous_location):
+    min_weight=  float('inf')
+    saitan_setuzoku_node = (0, 0)
+    drop_kouho =(0.0)
+    loop = 0
+    if genzaichi==(0,0):
+        for id, info in dic.items():
+            print(id, info.values())
+            if loop ==0:
+                saitan_setuzoku_node=id
+                min_weight = float(list(dic[saitan_setuzoku_node].values())[0])
+            else:
+                if float(list(dic[id].values())[0]) <min_weight:
+                    saitan_setuzoku_node=id
+
+            loop+=1
+    elif noriori[now_location[0]] ==1:
+        for id, info in dic.items():
+            print(id, info.values())
+            if id[0] == now_location[0] + Request:
+                drop_kouho = id
+            if loop == 0:
+                if not id ==previous_location and not noriori[id[0]]==-1:
+                    if check_node(G.adj[id], now_location) == 1:
+                        saitan_setuzoku_node = id
+                        min_weight = float(list(dic[saitan_setuzoku_node].values())[0])
+            else:
+                if not id == previous_location and not noriori[id[0]]==-1:
+                    if float(list(dic[id].values())[0]) < min_weight:
+
+                        if check_node(G.adj[id],now_location) ==1:
+                            saitan_setuzoku_node = id
+            loop += 1
+        if saitan_setuzoku_node == (0,0):
+            saitan_setuzoku_node = drop_kouho
+
+    elif noriori[now_location[0]] ==-1:
+        min_weight = float('inf')
+        saitan_setuzoku_node = (0, 0)
+
+        loop = 0
+        for id, info in dic.items():
+            print(id, info.values())
+            if loop == 0:
+                if not id ==previous_location:
+                    if check_node(G.adj[id], now_location) == 1:
+                        saitan_setuzoku_node = id
+                        min_weight = float(list(dic[saitan_setuzoku_node].values())[0])
+            else:
+                if not id == previous_location:
+                    if float(list(dic[id].values())[0]) < min_weight:
+                        saitan_setuzoku_node = id
+            loop += 1
+    return saitan_setuzoku_node
+
+"""
+#別のピックアップノードを入れたあと、以前のピックアップをドロップできるか判定する
+"""
+def check_node(next_location_dic,now_location):
+    flag =0
+    for id,info in next_location_dic.items():
+        if id[0] == now_location[0] + Request:
+            flag =1
+            break
+    return flag
+
+
+def saitan(dic):
+    min_node =min(dic)
+    min_weight= list(dic[min_node])[0]
+    return  min_node,min_weight
+
+def genzaich_update(tup):
+    tup_new=list(tup)
+    tup_new[1] = tup_new[1]+d
+    return tuple(tup_new)
+"""
+関数network_updateについて
+現在地のノードを削除したらいけません→この関数は使えないかも
+一台分のルートが完成してから削除しましょう
+"""
+def network_update(network,removenode):
+    for i in list(network.nodes()):
+        if i[0] == removenode[0]:
+            network.remove_node(i)
 
 if __name__ == '__main__':
     FILENAME = 'darp_ex3.txt'
@@ -68,8 +171,9 @@ if __name__ == '__main__':
     Distance = Setting_Info[3]  # 距離
     e = Setting_Info[4]  # early time
     l = Setting_Info[5]  # delay time
-
+    d = 1  #乗り降りにようする時間
     noriori = Setting_Info[6]
+
 
     Time_expand =1
 
@@ -174,11 +278,33 @@ if __name__ == '__main__':
     print(Time_expand)
     print(nx.number_of_edges(G))
     print(nx.number_of_nodes(G))
+    genzaichi = (0, 0)
+    old_genzaichi = genzaichi
+    print(G.adj[genzaichi])
+    print(G.adj[genzaichi][(1,5)].values())
+    print(G.adj[genzaichi].values())
+    print(type(G.adj[genzaichi]))
+    main_loop =0
+    while True:
+        setuzoku_Node=setuzoku_node_list2(G.adj[genzaichi],genzaichi,old_genzaichi)
+        print(setuzoku_Node)
 
-    nx.draw_networkx_nodes(G, pos, node_size=10, alpha=1, node_color='blue')
-    nx.draw_networkx_edges(G, pos, width=1)
-    plt.show()
 
 
+        genzaichi=setuzoku_Node
 
+        '''
+        nx.draw_networkx_nodes(G, pos, node_size=10, alpha=1, node_color='blue')
+        nx.draw_networkx_edges(G, pos, width=1)
+        plt.show()
+        '''
 
+        genzaichi = setuzoku_Node
+
+        print(genzaichi)
+
+        genzaichi = genzaich_update(genzaichi)
+        print(genzaichi)
+        main_loop+=1
+        if main_loop ==3:
+            break
