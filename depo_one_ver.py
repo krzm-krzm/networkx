@@ -132,6 +132,7 @@ if __name__ == '__main__':
                                     else:
                                         G.add_edge((a, j), (i + 1, k), weight=Distance[a][i + 1])
                                 if b == 1:
+                                    b=0
                                     break
 
     for i in range(n - 1):
